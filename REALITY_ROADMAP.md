@@ -9,6 +9,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom blades, leap ability, slam shockwave, operator give command
+- `Earthbreaker Hammer`
+  - GitHub: `https://github.com/KolTheGoat/earthbreaker-hammer`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom hammer, right-click ground smash, area damage, knockback ring, operator give command
 
 ## Build Rules
 
