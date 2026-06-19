@@ -2,7 +2,7 @@
 
 This marketplace started as a storefront demo. The next phase is turning each listing into real Minecraft projects.
 
-## Current Real Project
+## Current Real Projects
 
 - `Titan Leap Blades`
   - GitHub: `https://github.com/KolTheGoat/titan-leap-blades`
@@ -59,6 +59,71 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom daggers, forward blink, arrival damage, backstab bonus, operator give command
+- `Meteor Axe`
+  - GitHub: `https://github.com/KolTheGoat/meteor-axe`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom axe, meteor impact, burning crater, area damage, operator give command
+- `Frostbite Scythe`
+  - GitHub: `https://github.com/KolTheGoat/frostbite-scythe`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom scythe, icy sweep, freeze burst, slowing damage, operator give command
+- `Dragon Dash Spear`
+  - GitHub: `https://github.com/KolTheGoat/dragon-dash-spear`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom spear, dragon dash, fire trail, collision burst, operator give command
+- `Gravity Mace`
+  - GitHub: `https://github.com/KolTheGoat/gravity-mace`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom mace, gravity slam, enemy pull, launch burst, operator give command
+- `Phantom Bow`
+  - GitHub: `https://github.com/KolTheGoat/phantom-bow`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom bow, teleport shot, spectral hit burst, operator give command
+- `Emerald Paladin Set`
+  - GitHub: `https://github.com/KolTheGoat/emerald-paladin-set`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable armor set, emerald guard, healing pulse, resistance burst, operator give command
+- `Nether Berserker Set`
+  - GitHub: `https://github.com/KolTheGoat/nether-berserker-set`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable armor set, rage leap, fire aura, damage boost, operator give command
+- `Golem Knuckles`
+  - GitHub: `https://github.com/KolTheGoat/golem-knuckles`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom gauntlets, ground punch, stone knockup, area damage, operator give command
+- `Soul Reaper Katana`
+  - GitHub: `https://github.com/KolTheGoat/soul-reaper-katana`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom katana, dash slash, soul lifesteal, wither burst, operator give command
+- `Venom Fang Dagger`
+  - GitHub: `https://github.com/KolTheGoat/venom-fang-dagger`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom dagger, poison lunge, venom cloud, stacking poison, operator give command
+- `Sunflare Crossbow`
+  - GitHub: `https://github.com/KolTheGoat/sunflare-crossbow`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom crossbow, radiant bolt, explosion flare, burn burst, operator give command
+- `Abyssal Anchor`
+  - GitHub: `https://github.com/KolTheGoat/abyssal-anchor`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom anchor, abyss pull, darkness burst, heavy smash, operator give command
+- `Rift Shield`
+  - GitHub: `https://github.com/KolTheGoat/rift-shield`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom shield, rift block, knockback wave, short resistance, operator give command
 
 ## Build Rules
 
