@@ -19,6 +19,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom hammer, charged leap, landing lightning smash, chain lightning damage, operator give command
+- `Warden Crusher`
+  - GitHub: `https://github.com/KolTheGoat/warden-crusher`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom mace, sonic leap, landing sculk shockwave, area damage, knockback, operator give command
 
 ## Build Rules
 
