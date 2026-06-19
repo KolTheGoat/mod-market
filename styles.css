@@ -877,7 +877,8 @@ input[type="range"] {
 }
 
 .form-grid input,
-.form-grid select {
+.form-grid select,
+.form-grid textarea {
   min-width: 0;
   min-height: 44px;
   padding: 0 12px;
@@ -888,7 +889,8 @@ input[type="range"] {
 }
 
 .form-grid input:focus,
-.form-grid select:focus {
+.form-grid select:focus,
+.form-grid textarea:focus {
   outline: 3px solid rgba(12, 124, 89, 0.18);
   border-color: var(--emerald);
 }
@@ -1061,4 +1063,37 @@ input[type="range"] {
   .form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+.repo-link,
+.repo-pending {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--emerald-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.repo-pending {
+  color: var(--muted);
+}
+
+.form-wide {
+  grid-column: 1 / -1;
+}
+
+.form-grid textarea {
+  min-width: 0;
+  width: 100%;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.summary-note {
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  border-top: 1px solid var(--line);
 }

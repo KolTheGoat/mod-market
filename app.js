@@ -986,6 +986,37 @@ const opPlugins = [
 
 const mods = [...baseMods, ...opPlugins];
 
+const liveRepos = {
+  "Titan Leap Blades": "https://github.com/KolTheGoat/titan-leap-blades",
+  "Earthbreaker Hammer": "https://github.com/KolTheGoat/earthbreaker-hammer",
+  "Thunderlord Hammer": "https://github.com/KolTheGoat/thunderlord-hammer",
+  "Warden Crusher": "https://github.com/KolTheGoat/warden-crusher",
+  "Cloudrunner Boots": "https://github.com/KolTheGoat/cloudrunner-boots",
+  "GearSmith Recipes": "https://github.com/KolTheGoat/gearsmith-recipes",
+  "BossDrop Crafting": "https://github.com/KolTheGoat/bossdrop-crafting",
+  "Custom Ability Core": "https://github.com/KolTheGoat/custom-ability-core",
+  "Stormcaller Trident": "https://github.com/KolTheGoat/stormcaller-trident",
+  "Inferno Gauntlets": "https://github.com/KolTheGoat/inferno-gauntlets",
+  "Voidstep Daggers": "https://github.com/KolTheGoat/voidstep-daggers",
+  "Meteor Axe": "https://github.com/KolTheGoat/meteor-axe",
+  "Frostbite Scythe": "https://github.com/KolTheGoat/frostbite-scythe",
+  "Dragon Dash Spear": "https://github.com/KolTheGoat/dragon-dash-spear",
+  "Gravity Mace": "https://github.com/KolTheGoat/gravity-mace",
+  "Phantom Bow": "https://github.com/KolTheGoat/phantom-bow",
+  "Emerald Paladin Set": "https://github.com/KolTheGoat/emerald-paladin-set",
+  "Nether Berserker Set": "https://github.com/KolTheGoat/nether-berserker-set",
+  "Golem Knuckles": "https://github.com/KolTheGoat/golem-knuckles",
+  "Soul Reaper Katana": "https://github.com/KolTheGoat/soul-reaper-katana",
+  "Venom Fang Dagger": "https://github.com/KolTheGoat/venom-fang-dagger",
+  "Sunflare Crossbow": "https://github.com/KolTheGoat/sunflare-crossbow",
+  "Abyssal Anchor": "https://github.com/KolTheGoat/abyssal-anchor",
+  "Rift Shield": "https://github.com/KolTheGoat/rift-shield"
+};
+
+mods.forEach(mod => {
+  mod.repoUrl = liveRepos[mod.name] || "";
+});
+
 const categories = ["All", "Plugins", "Gear", "Adventure", "Tech", "Magic", "Server", "Worldgen", "Utility"];
 const state = {
   category: "All",
@@ -1019,9 +1050,6 @@ const closeCheckout = document.querySelector("#closeCheckout");
 const checkoutForm = document.querySelector("#checkoutForm");
 const checkoutSummary = document.querySelector("#checkoutSummary");
 const checkoutMessage = document.querySelector("#checkoutMessage");
-const checkoutCard = document.querySelector("#checkoutCard");
-const checkoutExpiry = document.querySelector("#checkoutExpiry");
-const checkoutCvc = document.querySelector("#checkoutCvc");
 
 function money(value) {
   return value === 0 ? "Free" : `$${value}`;
@@ -1087,9 +1115,10 @@ function renderMods() {
       <div class="mod-foot">
         <div>
           <span class="price">${money(mod.price)}</span>
-          <span class="rating">${mod.rating} rating · ${Math.round(mod.downloads / 1000)}K downloads</span>
+          <span class="rating">${mod.rating} rating &middot; ${Math.round(mod.downloads / 1000)}K downloads</span>
+          ${mod.repoUrl ? `<a class="repo-link" href="${mod.repoUrl}" target="_blank" rel="noopener">View repo</a>` : `<span class="repo-pending">Repo planned</span>`}
         </div>
-        <button class="button primary small" type="button" data-add="${mod.name}">Add</button>
+        <button class="button primary small" type="button" data-add="${mod.name}">Request</button>
       </div>
     </article>
   `).join("");
@@ -1102,16 +1131,16 @@ function renderCart() {
   if (!state.cart.length) {
     cartItems.innerHTML = `<div class="empty-state">Your cart is empty.</div>`;
     cartTotal.textContent = "$0";
-    checkoutButton.textContent = "Add an item to checkout";
+    checkoutButton.textContent = "Add an item to request";
     return;
   }
 
-  checkoutButton.textContent = "Continue to secure checkout";
+  checkoutButton.textContent = "Request access";
   cartItems.innerHTML = state.cart.map(mod => `
     <div class="cart-item">
       <div>
         <strong>${mod.name}</strong>
-        <small>${mod.loader} · ${mod.version} · by ${mod.creator}</small>
+        <small>${mod.loader} &middot; ${mod.version} &middot; by ${mod.creator}${mod.repoUrl ? " &middot; repo live" : ""}</small>
       </div>
       <strong>${money(mod.price)}</strong>
     </div>
@@ -1127,7 +1156,7 @@ function cartTotalValue() {
 
 function renderCheckoutSummary() {
   if (!state.cart.length) {
-    checkoutSummary.innerHTML = `<div class="empty-state">Add a mod or plugin before checkout.</div>`;
+    checkoutSummary.innerHTML = `<div class="empty-state">Add a mod or plugin before requesting access.</div>`;
     return;
   }
 
@@ -1136,15 +1165,16 @@ function renderCheckoutSummary() {
       <div class="summary-row">
         <div>
           <strong>${mod.name}</strong>
-          <small>${mod.category} - ${mod.loader} - ${mod.version}</small>
+          <small>${mod.category} - ${mod.loader} - ${mod.version}${mod.repoUrl ? " - source repo live" : ""}</small>
         </div>
         <strong>${money(mod.price)}</strong>
       </div>
     `).join("")}
     <div class="summary-row summary-total">
-      <span>Total</span>
+      <span>Listed value</span>
       <strong>$${cartTotalValue()}</strong>
     </div>
+    <div class="summary-note">Payment is disabled. This creates a local request summary only.</div>
   `;
 }
 
@@ -1185,27 +1215,9 @@ function closeCheckoutModal() {
   }
 }
 
-function formatCardNumber(value) {
-  return value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-}
-
-function formatExpiry(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 4);
-  if (digits.length <= 2) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
-function validCheckoutFields() {
-  const cardDigits = checkoutCard.value.replace(/\D/g, "");
-  const expiryMatch = checkoutExpiry.value.match(/^(\d{2})\/(\d{2})$/);
-  const cvcDigits = checkoutCvc.value.replace(/\D/g, "");
+function validRequestFields() {
   const terms = document.querySelector("#checkoutTerms").checked;
-
-  if (!checkoutForm.checkValidity() || !terms) return false;
-  if (cardDigits.length < 12 || cvcDigits.length < 3 || !expiryMatch) return false;
-
-  const month = Number(expiryMatch[1]);
-  return month >= 1 && month <= 12;
+  return checkoutForm.checkValidity() && terms;
 }
 
 categoryFilters.addEventListener("click", event => {
@@ -1264,33 +1276,24 @@ scrim.addEventListener("click", () => {
   closeCheckoutModal();
 });
 
-checkoutCard.addEventListener("input", event => {
-  event.target.value = formatCardNumber(event.target.value);
-});
-
-checkoutExpiry.addEventListener("input", event => {
-  event.target.value = formatExpiry(event.target.value);
-});
-
-checkoutCvc.addEventListener("input", event => {
-  event.target.value = event.target.value.replace(/\D/g, "").slice(0, 4);
-});
 
 checkoutForm.addEventListener("submit", event => {
   event.preventDefault();
 
-  if (!validCheckoutFields()) {
-    checkoutMessage.textContent = "Please complete the checkout details with valid demo payment information.";
+  if (!validRequestFields()) {
+    checkoutMessage.textContent = "Please complete the request details and agreement.";
     checkoutMessage.classList.add("error");
     checkoutForm.reportValidity();
     return;
   }
 
-  const orderId = `MF-${Date.now().toString().slice(-6)}`;
+  const requestId = `MF-REQ-${Date.now().toString().slice(-6)}`;
+  const selected = state.cart.map(mod => mod.name).join(", ");
   checkoutMessage.classList.remove("error");
-  checkoutMessage.textContent = `Demo order ${orderId} confirmed. No charge was made and no data left this browser.`;
+  checkoutMessage.textContent = `Request ${requestId} created for ${selected}. Payment is still off, so no charge was made.`;
   state.cart = [];
   renderCart();
+  checkoutForm.reset();
 });
 
 document.addEventListener("keydown", event => {
