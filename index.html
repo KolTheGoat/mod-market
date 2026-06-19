@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ModForge Market | Minecraft Mod & Plugin Store</title>
+    <meta
+      name="description"
+      content="A professional storefront concept for curated Minecraft mods, plugins, packs, and creator tools."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="ModForge Market home">
+        <span class="brand-mark" aria-hidden="true">MF</span>
+        <span>
+          <strong>ModForge</strong>
+          <small>Market</small>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#catalog">Mods & Plugins</a>
+        <a href="#bundles">Bundles</a>
+        <a href="#creators">Creators</a>
+        <a href="#seller">Seller</a>
+      </nav>
+      <button class="icon-button" id="cartButton" type="button" aria-label="Open cart">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M6 6h15l-2 8H8L6 3H3"></path>
+          <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"></path>
+          <path d="M18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"></path>
+        </svg>
+        <span id="cartCount">0</span>
+      </button>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="Featured marketplace">
+        <img class="hero-image" src="modforge-hero.png" alt="Voxel-inspired mod marketplace with glowing portals and display pedestals">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Curated mod marketplace</p>
+          <h1>ModForge Market</h1>
+          <p class="hero-copy">
+            Browse polished gameplay upgrades, craftable OP weapon plugins, creator packs, tools, and server-ready bundles with clear version support and install notes.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#catalog">Browse mods</a>
+            <a class="button secondary" href="#seller">Creator dashboard</a>
+          </div>
+          <dl class="hero-stats" aria-label="Marketplace stats">
+            <div><dt>70</dt><dd>verified listings</dd></div>
+            <div><dt>4.9</dt><dd>avg rating</dd></div>
+            <div><dt>24h</dt><dd>review target</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="trust-band" aria-label="Store benefits">
+        <div>
+          <strong>Version clarity</strong>
+          <span>Forge, Fabric, NeoForge, Quilt</span>
+        </div>
+        <div>
+          <strong>Creator-first</strong>
+          <span>License, changelog, and payout-ready metadata</span>
+        </div>
+        <div>
+          <strong>Server tested</strong>
+          <span>Dependencies and compatibility flags included</span>
+        </div>
+      </section>
+
+      <section class="store-layout" id="catalog">
+        <aside class="filters" aria-label="Catalog filters">
+          <div class="filter-header">
+            <h2>Catalog</h2>
+            <span id="resultCount">0 listings</span>
+          </div>
+
+          <label class="search">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m21 21-4.3-4.3"></path>
+              <circle cx="11" cy="11" r="7"></circle>
+            </svg>
+            <input id="searchInput" type="search" placeholder="Search mods, plugins, abilities">
+          </label>
+
+          <div class="filter-group">
+            <span class="filter-label">Category</span>
+            <div class="segmented" id="categoryFilters" role="group" aria-label="Category filters"></div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Loader</span>
+            <select id="loaderFilter" aria-label="Filter by mod loader">
+              <option value="all">All platforms</option>
+              <option value="Paper">Paper</option>
+              <option value="Spigot">Spigot</option>
+              <option value="Purpur">Purpur</option>
+              <option value="Forge">Forge</option>
+              <option value="Fabric">Fabric</option>
+              <option value="NeoForge">NeoForge</option>
+              <option value="Quilt">Quilt</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Max price</span>
+            <input id="priceFilter" type="range" min="0" max="24" value="24">
+            <div class="range-row">
+              <span>Free</span>
+              <strong id="priceLabel">$24</strong>
+            </div>
+          </div>
+
+          <label class="toggle-row">
+            <input id="serverOnly" type="checkbox">
+            <span>Server-safe only</span>
+          </label>
+        </aside>
+
+        <section class="catalog-shell" aria-label="Available mods">
+          <div class="toolbar">
+            <div>
+              <p class="eyebrow">Marketplace picks</p>
+              <h2>Featured Listings</h2>
+            </div>
+            <select id="sortSelect" aria-label="Sort mods">
+              <option value="featured">Featured</option>
+              <option value="rating">Highest rated</option>
+              <option value="downloads">Most downloaded</option>
+              <option value="price">Lowest price</option>
+            </select>
+          </div>
+          <div class="mod-grid" id="modGrid"></div>
+        </section>
+      </section>
+
+      <section class="bundle-band" id="bundles">
+        <div class="section-heading">
+          <p class="eyebrow">Ready-to-launch</p>
+          <h2>Server Bundles</h2>
+        </div>
+        <div class="bundle-grid">
+          <article class="bundle">
+            <span class="bundle-icon mining" aria-hidden="true"></span>
+            <h3>Survival Economy</h3>
+            <p>Questing, claims, shops, performance tuning, and balanced terrain generation.</p>
+            <strong>$39 bundle</strong>
+          </article>
+          <article class="bundle">
+            <span class="bundle-icon magic" aria-hidden="true"></span>
+            <h3>Arcane Adventure</h3>
+            <p>Spell systems, structures, bosses, loot tables, and curated progression mods.</p>
+            <strong>$44 bundle</strong>
+          </article>
+          <article class="bundle">
+            <span class="bundle-icon tech" aria-hidden="true"></span>
+            <h3>Tech Automation</h3>
+            <p>Factories, energy networks, logistics, machines, and server-friendly defaults.</p>
+            <strong>$49 bundle</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="creator-section" id="creators">
+        <div class="section-heading">
+          <p class="eyebrow">Creator spotlight</p>
+          <h2>Trusted Authors</h2>
+        </div>
+        <div class="creator-row">
+          <article>
+            <span>AR</span>
+            <h3>AetherRelay</h3>
+            <p>Exploration systems, portals, and world events.</p>
+          </article>
+          <article>
+            <span>NV</span>
+            <h3>NovaVoxel</h3>
+            <p>Performance packs and server operations tools.</p>
+          </article>
+          <article>
+            <span>RS</span>
+            <h3>RedstoneSmith</h3>
+            <p>Automation, storage, and factory gameplay loops.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="seller-panel" id="seller">
+        <div class="section-heading">
+          <p class="eyebrow">Seller workspace</p>
+          <h2>Creator Dashboard</h2>
+        </div>
+        <div class="dashboard">
+          <div class="dashboard-main">
+            <div class="dashboard-toolbar">
+              <strong>Submission queue</strong>
+              <button class="button primary small" type="button">New release</button>
+            </div>
+            <div class="release-list">
+              <div><span class="status live"></span><strong>Sky Realms 2.4</strong><em>Live</em></div>
+              <div><span class="status review"></span><strong>OreFlow Plus 1.8</strong><em>In review</em></div>
+              <div><span class="status draft"></span><strong>ClaimGuard API</strong><em>Draft</em></div>
+            </div>
+          </div>
+          <div class="metrics">
+            <div><span>Gross sales</span><strong>$12,480</strong></div>
+            <div><span>Downloads</span><strong>384K</strong></div>
+            <div><span>Refund rate</span><strong>0.7%</strong></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart" aria-hidden="true">
+      <div class="cart-head">
+        <h2>Your Cart</h2>
+        <button class="icon-button" id="closeCart" type="button" aria-label="Close cart">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="cartItems" class="cart-items"></div>
+      <div class="cart-total">
+        <span>Total</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+      <button class="button primary checkout" id="checkoutButton" type="button">Continue to secure checkout</button>
+    </aside>
+
+    <section class="checkout-modal" id="checkoutModal" aria-label="Secure checkout" aria-hidden="true">
+      <div class="checkout-head">
+        <div>
+          <p class="eyebrow">Encrypted demo checkout</p>
+          <h2>Secure Checkout</h2>
+        </div>
+        <button class="icon-button" id="closeCheckout" type="button" aria-label="Close checkout">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="secure-strip">
+        <span aria-hidden="true">SSL</span>
+        <strong>Local secure demo</strong>
+        <small>No payment data is sent or stored.</small>
+      </div>
+
+      <form class="checkout-form" id="checkoutForm">
+        <div class="order-summary" id="checkoutSummary"></div>
+
+        <div class="form-grid">
+          <label>
+            Email
+            <input id="checkoutEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+          <label>
+            Player name
+            <input id="checkoutPlayer" type="text" autocomplete="nickname" placeholder="SteveCrafts" minlength="3" required>
+          </label>
+          <label>
+            Card number
+            <input id="checkoutCard" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="19" required>
+          </label>
+          <label>
+            Expiry
+            <input id="checkoutExpiry" inputmode="numeric" autocomplete="cc-exp" placeholder="12/30" maxlength="5" required>
+          </label>
+          <label>
+            CVC
+            <input id="checkoutCvc" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" required>
+          </label>
+          <label>
+            License type
+            <select id="checkoutLicense" required>
+              <option value="personal">Personal download</option>
+              <option value="server">Single server license</option>
+              <option value="network">Network owner license</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="toggle-row checkout-terms">
+          <input id="checkoutTerms" type="checkbox" required>
+          <span>I understand this checkout is a demo and no real Minecraft files or payments are delivered.</span>
+        </label>
+
+        <div class="checkout-message" id="checkoutMessage" role="status"></div>
+        <button class="button primary checkout" type="submit">Place demo order</button>
+      </form>
+    </section>
+
+    <div class="scrim" id="scrim"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
