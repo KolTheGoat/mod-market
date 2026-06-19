@@ -34,6 +34,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable Titan, Storm, Sculk, and Cloud cores, recipe-list command, operator give command
+- `BossDrop Crafting`
+  - GitHub: `https://github.com/KolTheGoat/bossdrop-crafting`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: boss material drops, craftable Boss Core, `/bossdrop list`, `/bossdrop give`, `/bossdrop summon`
 
 ## Build Rules
 
