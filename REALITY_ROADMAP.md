@@ -24,6 +24,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom mace, sonic leap, landing sculk shockwave, area damage, knockback, operator give command
+- `Cloudrunner Boots`
+  - GitHub: `https://github.com/KolTheGoat/cloudrunner-boots`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom boots, right-click leap, one air charge, safe landing, operator give command
 
 ## Build Rules
 
