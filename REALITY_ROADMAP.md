@@ -39,6 +39,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: boss material drops, craftable Boss Core, `/bossdrop list`, `/bossdrop give`, `/bossdrop summon`
+- `Custom Ability Core`
+  - GitHub: `https://github.com/KolTheGoat/custom-ability-core`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: Leap, Smash, Lightning, Lifesteal, Beam, and Dash scrolls, persistent ability metadata, list/give/inspect commands
 
 ## Build Rules
 
