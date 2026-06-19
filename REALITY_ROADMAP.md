@@ -54,6 +54,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom gauntlets, forward fire wave, ignite effect, launch effect, operator give command
+- `Voidstep Daggers`
+  - GitHub: `https://github.com/KolTheGoat/voidstep-daggers`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable custom daggers, forward blink, arrival damage, backstab bonus, operator give command
 
 ## Build Rules
 
