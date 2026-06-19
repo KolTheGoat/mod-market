@@ -29,6 +29,11 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Type: Paper plugin
   - Status: Source repo created and pushed
   - Features: craftable custom boots, right-click leap, one air charge, safe landing, operator give command
+- `GearSmith Recipes`
+  - GitHub: `https://github.com/KolTheGoat/gearsmith-recipes`
+  - Type: Paper plugin
+  - Status: Source repo created and pushed
+  - Features: craftable Titan, Storm, Sculk, and Cloud cores, recipe-list command, operator give command
 
 ## Build Rules
 
