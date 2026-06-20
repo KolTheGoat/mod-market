@@ -1045,10 +1045,6 @@ const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const cartTotal = document.querySelector("#cartTotal");
 const checkoutButton = document.querySelector("#checkoutButton");
-const checkoutModal = document.querySelector("#checkoutModal");
-const closeCheckout = document.querySelector("#closeCheckout");
-const checkoutForm = document.querySelector("#checkoutForm");
-const checkoutSummary = document.querySelector("#checkoutSummary");
 const checkoutMessage = document.querySelector("#checkoutMessage");
 
 function money(value) {
@@ -1152,34 +1148,6 @@ function renderCart() {
   cartTotal.textContent = `$${total}`;
 }
 
-function cartTotalValue() {
-  return state.cart.reduce((sum, mod) => sum + mod.price, 0);
-}
-
-function renderCheckoutSummary() {
-  if (!state.cart.length) {
-    checkoutSummary.innerHTML = `<div class="empty-state">Add a mod or plugin before checkout.</div>`;
-    return;
-  }
-
-  checkoutSummary.innerHTML = `
-    ${state.cart.map(mod => `
-      <div class="summary-row">
-        <div>
-          <strong>${mod.name}</strong>
-          <small>${mod.category} - ${mod.loader} - ${mod.version}${mod.repoUrl ? " - source repo live" : ""}</small>
-        </div>
-        <strong>${money(mod.price)}</strong>
-      </div>
-    `).join("")}
-    <div class="summary-row summary-total">
-      <span>Total</span>
-      <strong>$${cartTotalValue()}</strong>
-    </div>
-    <div class="summary-note">Payment happens on Stripe's hosted checkout page. Card details are never entered here.</div>
-  `;
-}
-
 function openCart() {
   cartDrawer.classList.add("open");
   scrim.classList.add("open");
@@ -1189,37 +1157,40 @@ function openCart() {
 function closeCartDrawer() {
   cartDrawer.classList.remove("open");
   cartDrawer.setAttribute("aria-hidden", "true");
-  if (!checkoutModal.classList.contains("open")) {
-    scrim.classList.remove("open");
-  }
+  scrim.classList.remove("open");
 }
 
-function openCheckout() {
+async function startStripeCheckout() {
   if (!state.cart.length) {
     openCart();
     return;
   }
-  renderCheckoutSummary();
+
   checkoutMessage.textContent = "";
   checkoutMessage.classList.remove("error");
-  cartDrawer.classList.remove("open");
-  cartDrawer.setAttribute("aria-hidden", "true");
-  checkoutModal.classList.add("open");
-  checkoutModal.setAttribute("aria-hidden", "false");
-  scrim.classList.add("open");
-}
+  checkoutMessage.textContent = "Opening Stripe Checkout...";
+  checkoutButton.disabled = true;
 
-function closeCheckoutModal() {
-  checkoutModal.classList.remove("open");
-  checkoutModal.setAttribute("aria-hidden", "true");
-  if (!cartDrawer.classList.contains("open")) {
-    scrim.classList.remove("open");
+  try {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: state.cart.map(mod => ({ name: mod.name }))
+      })
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.url) {
+      throw new Error(data.error || "Stripe checkout could not be created.");
+    }
+
+    window.location.assign(data.url);
+  } catch (error) {
+    checkoutMessage.textContent = error.message;
+    checkoutMessage.classList.add("error");
+    checkoutButton.disabled = false;
   }
-}
-
-function validRequestFields() {
-  const terms = document.querySelector("#checkoutTerms").checked;
-  return checkoutForm.checkValidity() && terms;
 }
 
 categoryFilters.addEventListener("click", event => {
@@ -1271,61 +1242,12 @@ sortSelect.addEventListener("change", event => {
 
 cartButton.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartDrawer);
-checkoutButton.addEventListener("click", openCheckout);
-closeCheckout.addEventListener("click", closeCheckoutModal);
-scrim.addEventListener("click", () => {
-  closeCartDrawer();
-  closeCheckoutModal();
-});
-
-
-checkoutForm.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  if (!validRequestFields()) {
-    checkoutMessage.textContent = "Please complete the checkout details and agreement.";
-    checkoutMessage.classList.add("error");
-    checkoutForm.reportValidity();
-    return;
-  }
-
-  const submitButton = checkoutForm.querySelector('button[type="submit"]');
-  checkoutMessage.classList.remove("error");
-  checkoutMessage.textContent = "Creating secure Stripe checkout...";
-  submitButton.disabled = true;
-
-  try {
-    const response = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: state.cart.map(mod => ({ name: mod.name })),
-        customer: {
-          email: document.querySelector("#checkoutEmail").value,
-          playerName: document.querySelector("#checkoutPlayer").value,
-          licenseType: document.querySelector("#checkoutLicense").value,
-          notes: document.querySelector("#checkoutNotes").value
-        }
-      })
-    });
-    const data = await response.json();
-
-    if (!response.ok || !data.url) {
-      throw new Error(data.error || "Stripe checkout could not be created.");
-    }
-
-    window.location.href = data.url;
-  } catch (error) {
-    checkoutMessage.textContent = error.message;
-    checkoutMessage.classList.add("error");
-    submitButton.disabled = false;
-  }
-});
+checkoutButton.addEventListener("click", startStripeCheckout);
+scrim.addEventListener("click", closeCartDrawer);
 
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
     closeCartDrawer();
-    closeCheckoutModal();
   }
 });
 

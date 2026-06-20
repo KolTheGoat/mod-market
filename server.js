@@ -159,21 +159,39 @@ function validateItems(rawItems) {
   });
 }
 
-function buildStripeParams(items, customer) {
+function buildStripeParams(items) {
   const params = new URLSearchParams();
   params.set("mode", "payment");
+  params.set("submit_type", "pay");
   params.set("billing_address_collection", "auto");
   params.set("success_url", `${appUrl}/success.html?session_id={CHECKOUT_SESSION_ID}`);
   params.set("cancel_url", `${appUrl}/cancel.html`);
-
-  if (customer?.email) {
-    params.set("customer_email", customer.email);
-  }
-
-  params.set("metadata[player_name]", customer?.playerName || "");
-  params.set("metadata[license_type]", customer?.licenseType || "");
-  params.set("metadata[notes]", String(customer?.notes || "").slice(0, 450));
   params.set("metadata[items]", items.map(item => item.name).join(", ").slice(0, 450));
+
+  params.set("custom_fields[0][key]", "minecraftname");
+  params.set("custom_fields[0][label][type]", "custom");
+  params.set("custom_fields[0][label][custom]", "Minecraft player name");
+  params.set("custom_fields[0][type]", "text");
+  params.set("custom_fields[0][text][minimum_length]", "3");
+  params.set("custom_fields[0][text][maximum_length]", "16");
+
+  params.set("custom_fields[1][key]", "licensetype");
+  params.set("custom_fields[1][label][type]", "custom");
+  params.set("custom_fields[1][label][custom]", "License type");
+  params.set("custom_fields[1][type]", "dropdown");
+  params.set("custom_fields[1][dropdown][options][0][label]", "Personal download");
+  params.set("custom_fields[1][dropdown][options][0][value]", "personal");
+  params.set("custom_fields[1][dropdown][options][1][label]", "Single server license");
+  params.set("custom_fields[1][dropdown][options][1][value]", "server");
+  params.set("custom_fields[1][dropdown][options][2][label]", "Network owner license");
+  params.set("custom_fields[1][dropdown][options][2][value]", "network");
+
+  params.set("custom_fields[2][key]", "ordernotes");
+  params.set("custom_fields[2][label][type]", "custom");
+  params.set("custom_fields[2][label][custom]", "Server version or order notes");
+  params.set("custom_fields[2][type]", "text");
+  params.set("custom_fields[2][optional]", "true");
+  params.set("custom_fields[2][text][maximum_length]", "200");
 
   items.filter(item => item.price > 0).forEach((item, index) => {
     params.set(`line_items[${index}][quantity]`, "1");
@@ -193,7 +211,7 @@ async function createCheckoutSession(request, response) {
   }
 
   try {
-    const { items: rawItems, customer } = await readJson(request);
+    const { items: rawItems } = await readJson(request);
     const items = validateItems(rawItems);
     const paidItems = items.filter(item => item.price > 0);
 
@@ -208,7 +226,7 @@ async function createCheckoutSession(request, response) {
         Authorization: `Bearer ${stripeSecretKey}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: buildStripeParams(items, customer)
+      body: buildStripeParams(items)
     });
     const payload = await stripeResponse.json();
 

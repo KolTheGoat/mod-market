@@ -227,67 +227,12 @@
       </div>
       <div id="cartItems" class="cart-items"></div>
       <div class="cart-total">
-        <span>Listed value</span>
+        <span>Total</span>
         <strong id="cartTotal">$0</strong>
       </div>
+      <div class="checkout-message" id="checkoutMessage" role="status"></div>
       <button class="button primary checkout" id="checkoutButton" type="button">Pay with Stripe</button>
     </aside>
-
-    <section class="checkout-modal" id="checkoutModal" aria-label="Stripe checkout" aria-hidden="true">
-      <div class="checkout-head">
-        <div>
-          <p class="eyebrow">Stripe Checkout</p>
-          <h2>Secure Payment</h2>
-        </div>
-        <button class="icon-button" id="closeCheckout" type="button" aria-label="Close checkout">
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M18 6 6 18"></path>
-            <path d="m6 6 12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="secure-strip">
-        <span aria-hidden="true">SSL</span>
-        <strong>Cards are handled by Stripe</strong>
-        <small>We collect order details here, then redirect you to Stripe's hosted checkout page for payment.</small>
-      </div>
-
-      <form class="checkout-form" id="checkoutForm">
-        <div class="order-summary" id="checkoutSummary"></div>
-
-        <div class="form-grid">
-          <label>
-            Email
-            <input id="checkoutEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
-          </label>
-          <label>
-            Player name
-            <input id="checkoutPlayer" type="text" autocomplete="nickname" placeholder="SteveCrafts" minlength="3" required>
-          </label>
-          <label>
-            License type
-            <select id="checkoutLicense" required>
-              <option value="personal">Personal download</option>
-              <option value="server">Single server license</option>
-              <option value="network">Network owner license</option>
-            </select>
-          </label>
-          <label class="form-wide">
-            Notes
-            <textarea id="checkoutNotes" rows="4" placeholder="Server version, plugin list, or what you want installed first"></textarea>
-          </label>
-        </div>
-
-        <label class="toggle-row checkout-terms">
-          <input id="checkoutTerms" type="checkbox" required>
-          <span>I understand I will be redirected to Stripe to complete payment.</span>
-        </label>
-
-        <div class="checkout-message" id="checkoutMessage" role="status"></div>
-        <button class="button primary checkout" type="submit">Continue to Stripe</button>
-      </form>
-    </section>
 
     <div class="scrim" id="scrim"></div>
 

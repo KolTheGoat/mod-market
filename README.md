@@ -1,6 +1,6 @@
 # ModForge Market
 
-Professional Minecraft mods and plugins storefront website with a catalog, filters, cart, and Stripe Checkout payments.
+Professional Minecraft mods and plugins storefront website with a catalog, filters, cart, and direct Stripe Checkout payments.
 
 ## Local Stripe Setup
 
@@ -25,6 +25,8 @@ Professional Minecraft mods and plugins storefront website with a catalog, filte
 
 - Stripe secret keys must stay on the server and must not be committed.
 - The browser sends item names only; prices are validated on the server.
+- Clicking checkout creates a Stripe Checkout Session immediately; the store does not show its own payment form.
+- Stripe Checkout collects email, Minecraft player name, license type, order notes, billing details, and card information.
 - This server uses Node's built-in `fetch` to call Stripe directly, so no package install is required.
 - Stripe redirects back to `success.html` or `cancel.html`.
 - Point Stripe webhooks to `https://your-domain.com/api/stripe-webhook` and subscribe to `checkout.session.completed`.
