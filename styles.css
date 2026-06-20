@@ -249,6 +249,12 @@ a {
   border-color: rgba(255, 255, 255, 0.22);
 }
 
+.button.quiet {
+  color: var(--muted);
+  background: #eef1ec;
+  border-color: var(--line);
+}
+
 .button.small {
   min-height: 38px;
   padding: 0 12px;
@@ -1096,4 +1102,40 @@ input[type="range"] {
   font-size: 13px;
   font-weight: 800;
   border-top: 1px solid var(--line);
+}
+
+.result-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(12, 124, 89, 0.12), rgba(180, 97, 45, 0.1)),
+    var(--paper);
+}
+
+.result-panel {
+  width: min(640px, 100%);
+  padding: clamp(24px, 5vw, 48px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.result-panel .brand {
+  margin-bottom: 34px;
+}
+
+.result-panel h1 {
+  margin: 0;
+  font-size: clamp(42px, 7vw, 72px);
+  line-height: 0.95;
+}
+
+.result-panel p:not(.eyebrow) {
+  margin: 18px 0 28px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
 }

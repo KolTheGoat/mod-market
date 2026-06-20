@@ -1,0 +1,11 @@
+{
+  "name": "modforge-market",
+  "version": "1.0.0",
+  "description": "Minecraft mods and plugins storefront with Stripe Checkout.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js"
+  }
+}

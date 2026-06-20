@@ -230,16 +230,16 @@
         <span>Listed value</span>
         <strong id="cartTotal">$0</strong>
       </div>
-      <button class="button primary checkout" id="checkoutButton" type="button">Request access</button>
+      <button class="button primary checkout" id="checkoutButton" type="button">Pay with Stripe</button>
     </aside>
 
-    <section class="checkout-modal" id="checkoutModal" aria-label="Request access" aria-hidden="true">
+    <section class="checkout-modal" id="checkoutModal" aria-label="Stripe checkout" aria-hidden="true">
       <div class="checkout-head">
         <div>
-          <p class="eyebrow">Payment paused</p>
-          <h2>Request Access</h2>
+          <p class="eyebrow">Stripe Checkout</p>
+          <h2>Secure Payment</h2>
         </div>
-        <button class="icon-button" id="closeCheckout" type="button" aria-label="Close request form">
+        <button class="icon-button" id="closeCheckout" type="button" aria-label="Close checkout">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M18 6 6 18"></path>
             <path d="m6 6 12 12"></path>
@@ -248,9 +248,9 @@
       </div>
 
       <div class="secure-strip">
-        <span aria-hidden="true">NO $</span>
-        <strong>Payment is turned off for now</strong>
-        <small>This form only prepares a request summary in your browser. No card fields, no charge, no payment processing.</small>
+        <span aria-hidden="true">SSL</span>
+        <strong>Cards are handled by Stripe</strong>
+        <small>We collect order details here, then redirect you to Stripe's hosted checkout page for payment.</small>
       </div>
 
       <form class="checkout-form" id="checkoutForm">
@@ -268,9 +268,9 @@
           <label>
             License type
             <select id="checkoutLicense" required>
-              <option value="personal">Personal download request</option>
-              <option value="server">Single server request</option>
-              <option value="network">Network owner request</option>
+              <option value="personal">Personal download</option>
+              <option value="server">Single server license</option>
+              <option value="network">Network owner license</option>
             </select>
           </label>
           <label class="form-wide">
@@ -281,11 +281,11 @@
 
         <label class="toggle-row checkout-terms">
           <input id="checkoutTerms" type="checkbox" required>
-          <span>I understand payments are disabled right now and this creates a local request only.</span>
+          <span>I understand I will be redirected to Stripe to complete payment.</span>
         </label>
 
         <div class="checkout-message" id="checkoutMessage" role="status"></div>
-        <button class="button primary checkout" type="submit">Create request</button>
+        <button class="button primary checkout" type="submit">Continue to Stripe</button>
       </form>
     </section>
 

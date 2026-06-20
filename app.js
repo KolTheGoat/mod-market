@@ -1118,7 +1118,9 @@ function renderMods() {
           <span class="rating">${mod.rating} rating &middot; ${Math.round(mod.downloads / 1000)}K downloads</span>
           ${mod.repoUrl ? `<a class="repo-link" href="${mod.repoUrl}" target="_blank" rel="noopener">View repo</a>` : `<span class="repo-pending">Repo planned</span>`}
         </div>
-        <button class="button primary small" type="button" data-add="${mod.name}">Request</button>
+        ${mod.repoUrl
+          ? `<button class="button primary small" type="button" data-add="${mod.name}">Buy</button>`
+          : `<button class="button quiet small" type="button" disabled>Coming soon</button>`}
       </div>
     </article>
   `).join("");
@@ -1131,11 +1133,11 @@ function renderCart() {
   if (!state.cart.length) {
     cartItems.innerHTML = `<div class="empty-state">Your cart is empty.</div>`;
     cartTotal.textContent = "$0";
-    checkoutButton.textContent = "Add an item to request";
+    checkoutButton.textContent = "Add an item to checkout";
     return;
   }
 
-  checkoutButton.textContent = "Request access";
+  checkoutButton.textContent = "Pay with Stripe";
   cartItems.innerHTML = state.cart.map(mod => `
     <div class="cart-item">
       <div>
@@ -1156,7 +1158,7 @@ function cartTotalValue() {
 
 function renderCheckoutSummary() {
   if (!state.cart.length) {
-    checkoutSummary.innerHTML = `<div class="empty-state">Add a mod or plugin before requesting access.</div>`;
+    checkoutSummary.innerHTML = `<div class="empty-state">Add a mod or plugin before checkout.</div>`;
     return;
   }
 
@@ -1171,10 +1173,10 @@ function renderCheckoutSummary() {
       </div>
     `).join("")}
     <div class="summary-row summary-total">
-      <span>Listed value</span>
+      <span>Total</span>
       <strong>$${cartTotalValue()}</strong>
     </div>
-    <div class="summary-note">Payment is disabled. This creates a local request summary only.</div>
+    <div class="summary-note">Payment happens on Stripe's hosted checkout page. Card details are never entered here.</div>
   `;
 }
 
@@ -1277,23 +1279,47 @@ scrim.addEventListener("click", () => {
 });
 
 
-checkoutForm.addEventListener("submit", event => {
+checkoutForm.addEventListener("submit", async event => {
   event.preventDefault();
 
   if (!validRequestFields()) {
-    checkoutMessage.textContent = "Please complete the request details and agreement.";
+    checkoutMessage.textContent = "Please complete the checkout details and agreement.";
     checkoutMessage.classList.add("error");
     checkoutForm.reportValidity();
     return;
   }
 
-  const requestId = `MF-REQ-${Date.now().toString().slice(-6)}`;
-  const selected = state.cart.map(mod => mod.name).join(", ");
+  const submitButton = checkoutForm.querySelector('button[type="submit"]');
   checkoutMessage.classList.remove("error");
-  checkoutMessage.textContent = `Request ${requestId} created for ${selected}. Payment is still off, so no charge was made.`;
-  state.cart = [];
-  renderCart();
-  checkoutForm.reset();
+  checkoutMessage.textContent = "Creating secure Stripe checkout...";
+  submitButton.disabled = true;
+
+  try {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: state.cart.map(mod => ({ name: mod.name })),
+        customer: {
+          email: document.querySelector("#checkoutEmail").value,
+          playerName: document.querySelector("#checkoutPlayer").value,
+          licenseType: document.querySelector("#checkoutLicense").value,
+          notes: document.querySelector("#checkoutNotes").value
+        }
+      })
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.url) {
+      throw new Error(data.error || "Stripe checkout could not be created.");
+    }
+
+    window.location.href = data.url;
+  } catch (error) {
+    checkoutMessage.textContent = error.message;
+    checkoutMessage.classList.add("error");
+    submitButton.disabled = false;
+  }
 });
 
 document.addEventListener("keydown", event => {
