@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Payment Complete | ModForge Market</title>
+    <title>Verifying Payment | ModForge Market</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body class="result-page">
@@ -15,10 +15,12 @@
           <small>Market</small>
         </span>
       </a>
-      <p class="eyebrow">Stripe Checkout</p>
-      <h1>Payment Complete</h1>
-      <p>Your payment was completed through Stripe. Your order can now be fulfilled from the Stripe Dashboard or a webhook flow.</p>
+      <p class="eyebrow" id="resultEyebrow">Stripe Checkout</p>
+      <h1 id="resultTitle">Verifying Payment</h1>
+      <p id="resultMessage">Checking your order directly with Stripe. Keep this page open for a moment.</p>
+      <ul class="result-items" id="resultItems" aria-label="Purchased items"></ul>
       <a class="button primary" href="index.html">Back to store</a>
     </main>
+    <script src="success.js"></script>
   </body>
 </html>

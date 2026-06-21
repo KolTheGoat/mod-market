@@ -18,6 +18,11 @@ const appUrl = (process.env.APP_URL || `http://localhost:${port}`).replace(/\/$/
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const publicDir = __dirname;
+const isProduction = process.env.NODE_ENV === "production";
+const checkoutAttempts = new Map();
+const processedWebhookEvents = new Set();
+const checkoutWindowMs = 60_000;
+const checkoutLimit = 10;
 
 const products = new Map([
   ["Sky Realms", { price: 12, category: "Adventure" }],
@@ -128,8 +133,38 @@ const mimeTypes = {
 };
 
 function sendJson(response, status, payload) {
-  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  response.writeHead(status, {
+    "Cache-Control": "no-store",
+    "Content-Type": "application/json; charset=utf-8"
+  });
   response.end(JSON.stringify(payload));
+}
+
+function applySecurityHeaders(response) {
+  response.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com");
+  response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.setHeader("X-Content-Type-Options", "nosniff");
+  response.setHeader("X-Frame-Options", "DENY");
+  if (isProduction) {
+    response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+}
+
+function requestIp(request) {
+  const forwarded = request.headers["x-forwarded-for"];
+  return (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim()
+    || request.socket.remoteAddress
+    || "unknown";
+}
+
+function checkoutRateLimited(request) {
+  const now = Date.now();
+  const ip = requestIp(request);
+  const attempts = (checkoutAttempts.get(ip) || []).filter(time => now - time < checkoutWindowMs);
+  attempts.push(now);
+  checkoutAttempts.set(ip, attempts);
+  return attempts.length > checkoutLimit;
 }
 
 async function readJson(request) {
@@ -150,13 +185,33 @@ function validateItems(rawItems) {
     throw new Error("Cart must include 1 to 25 items.");
   }
 
+  const seen = new Set();
   return rawItems.map(item => {
     const name = typeof item === "string" ? item : item?.name;
     const product = products.get(name);
     if (!product) throw new Error(`Unknown product: ${name || "missing item"}`);
     if (!liveProductNames.has(name)) throw new Error(`${name} is not available for purchase yet.`);
+    if (seen.has(name)) throw new Error(`${name} can only appear once per order.`);
+    seen.add(name);
     return { name, ...product };
   });
+}
+
+async function stripeRequest(pathname, options = {}) {
+  const response = await fetch(`https://api.stripe.com/v1/${pathname}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${stripeSecretKey}`,
+      ...options.headers
+    }
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    const error = new Error(payload.error?.message || "Stripe request failed.");
+    error.status = response.status;
+    throw error;
+  }
+  return payload;
 }
 
 function buildStripeParams(items) {
@@ -206,7 +261,12 @@ function buildStripeParams(items) {
 
 async function createCheckoutSession(request, response) {
   if (!stripeSecretKey) {
-    sendJson(response, 500, { error: "Stripe is not configured. Set STRIPE_SECRET_KEY in your environment." });
+    sendJson(response, 503, { error: "Stripe is not configured. Set STRIPE_SECRET_KEY in your environment." });
+    return;
+  }
+
+  if (checkoutRateLimited(request)) {
+    sendJson(response, 429, { error: "Too many checkout attempts. Please wait one minute and try again." });
     return;
   }
 
@@ -220,29 +280,53 @@ async function createCheckoutSession(request, response) {
       return;
     }
 
-    const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    const payload = await stripeRequest("checkout/sessions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${stripeSecretKey}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: buildStripeParams(items)
     });
-    const payload = await stripeResponse.json();
-
-    if (!stripeResponse.ok) {
-      sendJson(response, stripeResponse.status, { error: payload.error?.message || "Stripe checkout could not be created." });
-      return;
-    }
 
     sendJson(response, 200, { url: payload.url });
   } catch (error) {
-    sendJson(response, 400, { error: error.message });
+    sendJson(response, error.status || 400, { error: error.message });
   }
 }
 
-function verifyStripeSignature(payload, signatureHeader) {
-  if (!stripeWebhookSecret || !signatureHeader) return false;
+async function getCheckoutSession(request, response) {
+  if (!stripeSecretKey) {
+    sendJson(response, 503, { error: "Stripe is not configured." });
+    return;
+  }
+
+  try {
+    const requestUrl = new URL(request.url, appUrl);
+    const sessionId = requestUrl.searchParams.get("session_id") || "";
+    if (!/^cs_(test_|live_)[A-Za-z0-9]+$/.test(sessionId)) {
+      sendJson(response, 400, { error: "Invalid checkout session ID." });
+      return;
+    }
+
+    const session = await stripeRequest(`checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=line_items`);
+    const items = (session.line_items?.data || []).map(item => ({
+      name: item.description,
+      quantity: item.quantity
+    }));
+
+    sendJson(response, 200, {
+      customerEmail: session.customer_details?.email || null,
+      items,
+      paid: session.payment_status === "paid",
+      status: session.status
+    });
+  } catch (error) {
+    sendJson(response, error.status || 400, { error: error.message });
+  }
+}
+
+function verifyStripeSignature(payload, signatureHeader, secret = stripeWebhookSecret) {
+  if (!secret || !signatureHeader) return false;
 
   const values = Object.fromEntries(signatureHeader.split(",").map(part => part.split("=")));
   const timestamp = values.t;
@@ -252,7 +336,7 @@ function verifyStripeSignature(payload, signatureHeader) {
   const age = Math.abs(Date.now() / 1000 - Number(timestamp));
   if (!Number.isFinite(age) || age > 300) return false;
 
-  const expected = createHmac("sha256", stripeWebhookSecret)
+  const expected = createHmac("sha256", secret)
     .update(`${timestamp}.${payload}`, "utf8")
     .digest("hex");
   const actualBuffer = Buffer.from(signature, "hex");
@@ -270,6 +354,15 @@ async function handleStripeWebhook(request, response) {
     }
 
     const event = JSON.parse(payload);
+    if (processedWebhookEvents.has(event.id)) {
+      sendJson(response, 200, { received: true });
+      return;
+    }
+    processedWebhookEvents.add(event.id);
+    if (processedWebhookEvents.size > 1000) {
+      processedWebhookEvents.delete(processedWebhookEvents.values().next().value);
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       console.log(`Stripe payment completed: ${session.id} (${session.amount_total} ${session.currency})`);
@@ -283,10 +376,11 @@ async function handleStripeWebhook(request, response) {
 
 async function serveStatic(request, response) {
   const url = new URL(request.url, appUrl);
-  const requested = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
-  const filePath = path.normalize(path.join(publicDir, requested));
+  const requested = url.pathname === "/" ? "index.html" : decodeURIComponent(url.pathname).replace(/^\/+/, "");
+  const filePath = path.resolve(publicDir, requested);
+  const relativePath = path.relative(publicDir, filePath);
 
-  if (!filePath.startsWith(publicDir)) {
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
     response.writeHead(403);
     response.end("Forbidden");
     return;
@@ -294,15 +388,39 @@ async function serveStatic(request, response) {
 
   try {
     const content = await readFile(filePath);
-    response.writeHead(200, { "Content-Type": mimeTypes[path.extname(filePath)] || "application/octet-stream" });
-    response.end(content);
+    const cacheControl = path.extname(filePath) === ".html" ? "no-cache" : "public, max-age=3600";
+    response.writeHead(200, {
+      "Cache-Control": cacheControl,
+      "Content-Type": mimeTypes[path.extname(filePath)] || "application/octet-stream"
+    });
+    response.end(request.method === "HEAD" ? undefined : content);
   } catch {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
   }
 }
 
-createServer((request, response) => {
+function requestHandler(request, response) {
+  applySecurityHeaders(response);
+
+  if (request.method === "GET" && request.url === "/api/health") {
+    const ready = Boolean(
+      stripeSecretKey
+      && (!isProduction || (stripeWebhookSecret && appUrl.startsWith("https://")))
+    );
+    sendJson(response, ready ? 200 : 503, {
+      appUrl,
+      mode: stripeSecretKey?.startsWith("sk_live_") ? "live" : "test",
+      ready
+    });
+    return;
+  }
+
+  if (request.method === "GET" && request.url.startsWith("/api/checkout-session?")) {
+    getCheckoutSession(request, response);
+    return;
+  }
+
   if (request.method === "POST" && request.url === "/api/stripe-webhook") {
     handleStripeWebhook(request, response);
     return;
@@ -320,6 +438,22 @@ createServer((request, response) => {
 
   response.writeHead(405, { "Content-Type": "text/plain; charset=utf-8" });
   response.end("Method not allowed");
-}).listen(port, () => {
-  console.log(`ModForge Market running at ${appUrl}`);
-});
+}
+
+function startServer() {
+  return createServer(requestHandler).listen(port, () => {
+    console.log(`ModForge Market running at ${appUrl}`);
+  });
+}
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = {
+  buildStripeParams,
+  requestHandler,
+  startServer,
+  validateItems,
+  verifyStripeSignature
+};

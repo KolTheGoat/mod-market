@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: modforge-market
+    runtime: node
+    buildCommand: echo "No build step required"
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

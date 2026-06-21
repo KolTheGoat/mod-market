@@ -1139,3 +1139,19 @@ input[type="range"] {
   font-size: 18px;
   line-height: 1.6;
 }
+
+.result-items {
+  display: grid;
+  gap: 8px;
+  margin: -12px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.result-items li {
+  padding: 12px 14px;
+  background: #f7f9f5;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 850;
+}

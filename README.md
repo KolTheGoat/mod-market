@@ -32,3 +32,22 @@ Professional Minecraft mods and plugins storefront website with a catalog, filte
 - Point Stripe webhooks to `https://your-domain.com/api/stripe-webhook` and subscribe to `checkout.session.completed`.
 - The webhook signature is verified before a completed payment is accepted by the server.
 - Automatic file delivery still needs a private storage/database fulfillment step before launch.
+
+## Production Deployment
+
+The repository includes `render.yaml` for a Node web service. Configure these environment variables on the host:
+
+- `APP_URL`: the final HTTPS store URL
+- `STRIPE_SECRET_KEY`: use `sk_test_...` while testing, then `sk_live_...` only after Stripe activation
+- `STRIPE_WEBHOOK_SECRET`: the signing secret for the deployed `/api/stripe-webhook` endpoint
+- `NODE_ENV=production`
+
+The host health check is `/api/health`. In production it returns an unhealthy status until HTTPS, the Stripe key, and the webhook secret are configured.
+
+Before accepting real money:
+
+1. Complete Stripe email and business verification.
+2. Deploy the Node service and set `APP_URL` to its HTTPS URL.
+3. Add the Stripe webhook endpoint and its signing secret.
+4. Test a complete sandbox payment and confirm the success page verifies it.
+5. Upload tested, private release files and connect fulfillment to verified webhook events.
