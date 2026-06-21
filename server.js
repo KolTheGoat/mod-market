@@ -97,32 +97,33 @@ const products = new Map([
   ["Smash Enchantments", { price: 7, category: "Plugins" }]
 ]);
 
-const liveProductNames = new Set([
-  "Titan Leap Blades",
-  "Earthbreaker Hammer",
-  "Thunderlord Hammer",
-  "Warden Crusher",
-  "Cloudrunner Boots",
-  "GearSmith Recipes",
-  "BossDrop Crafting",
-  "Custom Ability Core",
-  "Stormcaller Trident",
-  "Inferno Gauntlets",
-  "Voidstep Daggers",
-  "Meteor Axe",
-  "Frostbite Scythe",
-  "Dragon Dash Spear",
-  "Gravity Mace",
-  "Phantom Bow",
-  "Emerald Paladin Set",
-  "Nether Berserker Set",
-  "Golem Knuckles",
-  "Soul Reaper Katana",
-  "Venom Fang Dagger",
-  "Sunflare Crossbow",
-  "Abyssal Anchor",
-  "Rift Shield"
+const liveProductRepos = new Map([
+  ["Titan Leap Blades", "https://github.com/KolTheGoat/titan-leap-blades"],
+  ["Earthbreaker Hammer", "https://github.com/KolTheGoat/earthbreaker-hammer"],
+  ["Thunderlord Hammer", "https://github.com/KolTheGoat/thunderlord-hammer"],
+  ["Warden Crusher", "https://github.com/KolTheGoat/warden-crusher"],
+  ["Cloudrunner Boots", "https://github.com/KolTheGoat/cloudrunner-boots"],
+  ["GearSmith Recipes", "https://github.com/KolTheGoat/gearsmith-recipes"],
+  ["BossDrop Crafting", "https://github.com/KolTheGoat/bossdrop-crafting"],
+  ["Custom Ability Core", "https://github.com/KolTheGoat/custom-ability-core"],
+  ["Stormcaller Trident", "https://github.com/KolTheGoat/stormcaller-trident"],
+  ["Inferno Gauntlets", "https://github.com/KolTheGoat/inferno-gauntlets"],
+  ["Voidstep Daggers", "https://github.com/KolTheGoat/voidstep-daggers"],
+  ["Meteor Axe", "https://github.com/KolTheGoat/meteor-axe"],
+  ["Frostbite Scythe", "https://github.com/KolTheGoat/frostbite-scythe"],
+  ["Dragon Dash Spear", "https://github.com/KolTheGoat/dragon-dash-spear"],
+  ["Gravity Mace", "https://github.com/KolTheGoat/gravity-mace"],
+  ["Phantom Bow", "https://github.com/KolTheGoat/phantom-bow"],
+  ["Emerald Paladin Set", "https://github.com/KolTheGoat/emerald-paladin-set"],
+  ["Nether Berserker Set", "https://github.com/KolTheGoat/nether-berserker-set"],
+  ["Golem Knuckles", "https://github.com/KolTheGoat/golem-knuckles"],
+  ["Soul Reaper Katana", "https://github.com/KolTheGoat/soul-reaper-katana"],
+  ["Venom Fang Dagger", "https://github.com/KolTheGoat/venom-fang-dagger"],
+  ["Sunflare Crossbow", "https://github.com/KolTheGoat/sunflare-crossbow"],
+  ["Abyssal Anchor", "https://github.com/KolTheGoat/abyssal-anchor"],
+  ["Rift Shield", "https://github.com/KolTheGoat/rift-shield"]
 ]);
+const liveProductNames = new Set(liveProductRepos.keys());
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -311,12 +312,14 @@ async function getCheckoutSession(request, response) {
     const session = await stripeRequest(`checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=line_items`);
     const items = (session.line_items?.data || []).map(item => ({
       name: item.description,
-      quantity: item.quantity
+      quantity: item.quantity,
+      repoUrl: liveProductRepos.get(item.description) || null
     }));
 
     sendJson(response, 200, {
       customerEmail: session.customer_details?.email || null,
       items,
+      mode: stripeSecretKey.startsWith("sk_live_") ? "live" : "test",
       paid: session.payment_status === "paid",
       status: session.status
     });

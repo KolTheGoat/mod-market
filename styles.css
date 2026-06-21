@@ -1233,9 +1233,24 @@ input[type="range"] {
 }
 
 .result-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 12px 14px;
   background: #f7f9f5;
   border: 1px solid var(--line);
   border-radius: 8px;
   font-weight: 850;
+}
+
+.result-items .button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+  .result-items li {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
