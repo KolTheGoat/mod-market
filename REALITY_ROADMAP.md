@@ -125,6 +125,40 @@ This marketplace started as a storefront demo. The next phase is turning each li
   - Status: Source repo created and pushed
   - Features: craftable custom shield, rift block, knockback wave, short resistance, operator give command
 
+## June 2026 Plugin Batch
+
+The following 20 Paper 1.21.6 plugins have complete Java 21 source, recipes, commands, cooldowns, persistent item identity, build workflows, and locally verified JAR builds. Their GitHub repositories have been created; storefront checkout remains disabled until each source push is confirmed.
+
+| Plugin | Repository | Primary ability |
+| --- | --- | --- |
+| Warlock Staffs | `KolTheGoat/warlock-staffs` | Soul bolts and curse bursts |
+| Lava Launcher | `KolTheGoat/lava-launcher` | Molten projectiles and impact blasts |
+| Moonblade Plugin | `KolTheGoat/moonblade-plugin` | Lunar dashes and crescent waves |
+| Phoenix Feather Bow | `KolTheGoat/phoenix-feather-bow` | Blazing arrows and revival power |
+| Echo Boots | `KolTheGoat/echo-boots` | Sonic leaps and shockwave landings |
+| Royal Claymore | `KolTheGoat/royal-claymore` | Sweeping combos and launch attacks |
+| Prism Cannon | `KolTheGoat/prism-cannon` | Charged elemental projectiles |
+| Ender Whip | `KolTheGoat/ender-whip` | Grapples, pulls, and teleport strikes |
+| Boulder Toss Gloves | `KolTheGoat/boulder-toss-gloves` | Boulder throws and safe ground smashes |
+| Skyhook Grappler | `KolTheGoat/skyhook-grappler` | Aerial grapples and diving attacks |
+| Bloodmoon Saber | `KolTheGoat/bloodmoon-saber` | Lifesteal bursts and moon slashes |
+| Celestial Pickaxe | `KolTheGoat/celestial-pickaxe` | Mining bursts and starfall attacks |
+| Radiant Wings | `KolTheGoat/radiant-wings` | Flight boosts and light explosions |
+| Sculk Launcher | `KolTheGoat/sculk-launcher` | Sonic shots and darkness effects |
+| Runic Shields | `KolTheGoat/runic-shields` | Blocking powers and counterattacks |
+| Comet Boots | `KolTheGoat/comet-boots` | High-speed leaps and impact blasts |
+| Necro Wand | `KolTheGoat/necro-wand` | Summons and soul projectiles |
+| Raid Relic Drops | `KolTheGoat/raid-relic-drops` | Raid rewards and powerful relics |
+| Enchanted Smithing | `KolTheGoat/enchanted-smithing` | Advanced recipes for OP equipment |
+| Arena Smash Kit | `KolTheGoat/arena-smash-kit` | Leaps, slams, knockback, and combos |
+
+Before a batch listing is enabled for checkout:
+
+1. Confirm the repository contains source and build files.
+2. Confirm the GitHub Actions build succeeds.
+3. Install the JAR on a staging Paper server and run a gameplay smoke test.
+4. Add the repository to `liveRepos` and the product to `liveProductNames` in the same store release.
+
 ## Build Rules
 
 Every major implementation should be committed and pushed after it is complete.
